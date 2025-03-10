@@ -1,0 +1,32 @@
+[
+    {
+        "id": "MIR-2024-v01-t01-Q001",
+        "question_text": "¿Cuál de los siguientes fármacos NO se utiliza en el tratamiento de la hipertensión arterial?",
+        "options": {
+            "A": "Enalapril",
+            "B": "Amlodipino",
+            "C": "Fenilefrina",
+            "D": "Losartán"
+        }
+    },
+    {
+        "id": "MIR-2024-v01-t01-Q002",
+        "question_text": "¿Cuál es el principal neurotransmisor excitatorio del sistema nervioso central?",
+        "options": {
+            "A": "Glutamato",
+            "B": "GABA",
+            "C": "Dopamina",
+            "D": "Serotonina"
+        }
+    },
+    {
+        "id": "MIR-2024-v01-t01-Q003",
+        "question_text": "¿Cuál de los siguientes NO es un síntoma típico de la apendicitis aguda?",
+        "options": {
+            "A": "Dolor en fosa ilíaca derecha",
+            "B": "Signo de Blumberg positivo",
+            "C": "Diarrea sanguinolenta",
+            "D": "Fiebre"
+        }
+    }
+]

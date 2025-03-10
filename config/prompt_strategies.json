@@ -1,0 +1,22 @@
+{
+    "Prompt-001": {
+        "description": "Spanish prompt for AI model taking standardized test",
+        "template": "Estás tomando un examen estandarizado MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
+    },
+    "Prompt-002": {
+        "description": "English prompt, questions and options in Spanish",
+        "template": "You are taking a standardized MIR medical exam. Correct answers are worth +3 points and incorrect answers are -1 point. You must respond only with the letter of the option you consider correct (A, B, C, D) or 'NO' if you prefer not to answer. Do not include any additional text in your response. Your goal is to maximize your score.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only A, B, C, D or NO):"
+    },
+    "Prompt-003": {
+        "description": "English prompt for doctor, questions and options in Spanish",
+        "template": "You are a doctor taking the MIR standardized medical exam. Correct answers are worth +3 points and incorrect answers are -1 point. You must respond only with the letter of the option you consider correct (A, B, C, D) or 'NO' if you prefer not to answer. Do not include any additional text in your response. Your goal is to maximize your score.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only A, B, C, D or NO):"
+    },
+    "Prompt-004": {
+        "description": "Spanish prompt for doctor taking MIR exam",
+        "template": "Eres un médico tomando el examen MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
+    },
+    "Prompt-005": {
+        "description": "Spanish prompt with detailed reasoning request and confidence level",
+        "template": "Estás respondiendo un examen médico MIR. Para cada pregunta, piensa paso a paso, analiza cada opción y expresa tu nivel de confianza en la respuesta elegida. Al final, proporciona SOLO la letra de la respuesta correcta (A, B, C, D) o 'NO' si prefieres no responder.\n\nLas respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Responde 'NO' si tu nivel de confianza es menor al 50%. Tu objetivo es maximizar tu puntuación total.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nRazona tu respuesta paso a paso y proporciona tu nivel de confianza. Finalmente, responde solo con A, B, C, D o NO:"
+    }
+}
