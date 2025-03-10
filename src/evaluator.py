@@ -19,17 +19,17 @@ logger = logging.getLogger('melida-evaluator')
 
 
 class ModelEvaluator:
-    \"\"\"Main evaluator class for testing AI models on medical exams.\"\"\"
+    """Main evaluator class for testing AI models on medical exams."""
 
     def __init__(self, config_path: str = 'config/api_config.json'):
-        \"\"\"Initialize evaluator with configuration.\"\"\"
+        """Initialize evaluator with configuration."""
         self.config = self._load_config(config_path)
         self.setup_clients()
         self.results = []
         self.prompt_strategies = self._load_prompt_strategies()
 
     def _load_config(self, config_path: str) -> Dict:
-        \"\"\"Load API configuration.\"\"\"
+        """Load API configuration."""
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -38,7 +38,7 @@ class ModelEvaluator:
             raise
 
     def _load_prompt_strategies(self) -> Dict:
-        \"\"\"Load prompt strategies from config.\"\"\"
+        """Load prompt strategies from config."""
         try:
             with open('config/prompt_strategies.json', 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -47,9 +47,11 @@ class ModelEvaluator:
             raise
 
     def setup_clients(self):
-        \"\"\"Set up API clients based on configuration.\"\"\"
+        """Set up API clients based on configuration."""
         if 'openai' in self.config:
             openai.api_key = self.config['openai']['api_key']
+            # Create a client instance for the new OpenAI SDK
+            self.openai_client = openai.OpenAI(api_key=self.config['openai']['api_key'])
 
         if 'anthropic' in self.config:
             self.anthropic_client = anthropic.Anthropic(
@@ -57,7 +59,7 @@ class ModelEvaluator:
             )
 
     def load_questions(self, file_path: str) -> List[Dict]:
-        \"\"\"Load test questions from file.\"\"\"
+        """Load test questions from file."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -66,7 +68,7 @@ class ModelEvaluator:
             raise
 
     def load_answer_key(self, file_path: str) -> Dict:
-        \"\"\"Load answer key from file.\"\"\"
+        """Load answer key from file."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -75,7 +77,7 @@ class ModelEvaluator:
             raise
 
     def evaluate_question(self, question: Dict, prompt_strategy: str, model: str) -> Dict:
-        \"\"\"Evaluate a single question using specified prompt strategy and model.\"\"\"
+        """Evaluate a single question using specified prompt strategy and model."""
         # Start timing the evaluation
         start_time = time.time()
 
@@ -118,9 +120,10 @@ class ModelEvaluator:
         }
 
     def _call_openai(self, prompt: str, model: str) -> str:
-        \"\"\"Call OpenAI API with prompt.\"\"\"
+        """Call OpenAI API with prompt using new API client."""
         try:
-            response = openai.ChatCompletion.create(
+            # Use new OpenAI API syntax (v1.0.0+)
+            response = self.openai_client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0,
@@ -132,7 +135,7 @@ class ModelEvaluator:
             return "ERROR"
 
     def _call_anthropic(self, prompt: str, model: str) -> str:
-        \"\"\"Call Anthropic API with prompt.\"\"\"
+        """Call Anthropic API with prompt."""
         try:
             response = self.anthropic_client.messages.create(
                 model=model,
@@ -149,7 +152,7 @@ class ModelEvaluator:
             return "ERROR"
 
     def _extract_answer(self, response: str) -> str:
-        \"\"\"Extract the answer (A, B, C, D, or NO) from the model response.\"\"\"
+        """Extract the answer (A, B, C, D, or NO) from the model response."""
         # Clean and normalize the response
         clean_response = response.upper().strip()
 
@@ -169,13 +172,13 @@ class ModelEvaluator:
         return "INVALID"
 
     def _count_tokens(self, prompt: str, response: str, model: str) -> int:
-        \"\"\"Estimate token count for the request and response.\"\"\"
+        """Estimate token count for the request and response."""
         # This is a simple approximation; for production, use model-specific tokenizers
         words = len(prompt.split()) + len(response.split())
         return int(words * 1.3)  # Rough approximation
 
     def calculate_score(self, model_answer: str, correct_answer: str) -> int:
-        \"\"\"Calculate score based on model's answer and correct answer.\"\"\"
+        """Calculate score based on model's answer and correct answer."""
         if model_answer in ["INVALID", "ERROR"]:
             return 0  # No score for invalid responses
 
@@ -194,7 +197,7 @@ class ModelEvaluator:
                        model: str,
                        output_dir: str = 'data/results',
                        sample_size: Optional[int] = None) -> str:
-        \"\"\"
+        """
         Run evaluation on a set of questions using specified prompt strategy and model.
 
         Args:
@@ -207,7 +210,7 @@ class ModelEvaluator:
 
         Returns:
             Path to the results file
-        \"\"\"
+        """
         questions = self.load_questions(questions_file)
         answer_key = self.load_answer_key(answer_key_file)
 
