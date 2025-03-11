@@ -1,4 +1,4 @@
-# MELIDA: Model Evaluation for Life-sciences Intelligence and Decision Assistance
+# Model Evaluation for Life-sciences Intelligence and Decision Assistance
 
 This project evaluates AI language models on standardized Spanish medical exam (MIR) questions to assess their medical knowledge and reasoning capabilities.
 
