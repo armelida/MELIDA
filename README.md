@@ -16,7 +16,7 @@ MELIDA (Model Evaluation for Life-sciences Intelligence and Decision Assistance)
 
 ## Repository Structure
 
-\`\`\`
+```
 MELIDA/
 ├── data/
 │   ├── questions/     # MIR exam questions in JSON/CSV format
@@ -34,7 +34,7 @@ MELIDA/
 ├── .gitignore         # Ignores sensitive files like API keys
 ├── requirements.txt   # Dependencies
 └── README.md          # Project documentation
-\`\`\`
+```
 
 ## Setup Instructions
 
