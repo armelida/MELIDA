@@ -39,15 +39,15 @@ MELIDA/
 ## Setup Instructions
 
 1. Clone the repository:
-   \`\`\`bash
+   ```bash
    git clone https://github.com/armelida/MELIDA.git
    cd MELIDA
-   \`\`\`
+   ```
 
 2. Install dependencies:
-   \`\`\`bash
+   ```bash
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 3. Configure API credentials:
    - Copy \`config/api_config_template.json\` to \`config/api_config.json\`
@@ -59,7 +59,7 @@ MELIDA/
 
 Using Python:
 
-\`\`\`python
+```python
 from src.evaluator import ModelEvaluator
 
 evaluator = ModelEvaluator('config/api_config.json')
@@ -69,7 +69,7 @@ evaluator.run_evaluation(
     prompt_strategy='Prompt-001',
     model='gpt-4'
 )
-\`\`\`
+```
 
 ### Using Google Colab
 
@@ -108,9 +108,7 @@ The CSV output files are designed to be easily imported into Tableau for visuali
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
 
-This project is open source and available under the [MIT License](LICENSE).
 
 ## Contact
 
