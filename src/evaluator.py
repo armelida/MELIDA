@@ -9,6 +9,7 @@ import openai
 import anthropic
 import logging
 from tqdm import tqdm
+import re
 
 # Setup logging
 logging.basicConfig(
@@ -78,14 +79,9 @@ class ModelEvaluator:
 
     def evaluate_question(self, question: Dict, prompt_strategy: str, model: str) -> Dict:
         """Evaluate a single question using specified prompt strategy and model."""
-        # Start timing the evaluation
         start_time = time.time()
-
-        # Get the prompt strategy dictionary and template string
         prompt_strategy_dict = self.prompt_strategies[prompt_strategy]
         prompt_template = prompt_strategy_dict["template"]
-
-        # Format the prompt with the question details
         prompt = prompt_template.format(
             question_text=question['question_text'],
             option_a=question['options']['A'],
@@ -93,22 +89,14 @@ class ModelEvaluator:
             option_c=question['options']['C'],
             option_d=question['options']['D']
         )
-
-        # Call the appropriate model API.
-        # Now also support models that include "o3-mini" in their name.
         if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
             response = self._call_anthropic(prompt, model)
         else:
             raise ValueError(f"Unsupported model: {model}")
-
         end_time = time.time()
-
-        # Process the response to extract the answer (A, B, C, D, or NO)
         model_answer = self._extract_answer(response)
-
-        # Return result details
         return {
             'question_id': question['id'],
             'prompt_strategy': prompt_strategy,
@@ -123,12 +111,12 @@ class ModelEvaluator:
     def _call_openai(self, prompt: str, model: str) -> str:
         """Call OpenAI API with prompt using new API client."""
         try:
-            # For models like "o3-mini", use max_completion_tokens instead of max_tokens.
+            # For models like "o3-mini", remove the restrictive token limit by setting a high max_completion_tokens.
             if "o3-mini" in model.lower():
                 response = self.openai_client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    max_completion_tokens=10  # Use max_completion_tokens for o3-mini
+                    max_completion_tokens=1024  # Increase token limit for complex reasoning
                 )
             else:
                 response = self.openai_client.chat.completions.create(
@@ -146,7 +134,7 @@ class ModelEvaluator:
         try:
             response = self.anthropic_client.messages.create(
                 model=model,
-                max_tokens=10,  # We only need a short response (A/B/C/D/NO)
+                max_tokens=10,
                 temperature=0,
                 system="You are taking a medical examination. Answer only with the letter of the correct option (A, B, C, D) or 'NO' if you prefer not to answer.",
                 messages=[
@@ -159,43 +147,28 @@ class ModelEvaluator:
             return "ERROR"
 
     def _extract_answer(self, response: str) -> str:
-        """Extract the answer (A, B, C, D, or NO) from the model response."""
-        # Clean and normalize the response
+        """Extract the answer (A, B, C, D, or NO) from the model response using regex."""
         clean_response = response.upper().strip()
-
-        # Look for valid answers
-        valid_answers = ['A', 'B', 'C', 'D', 'NO']
-
-        # First check if response is exactly one of the valid answers
-        if clean_response in valid_answers:
-            return clean_response
-
-        # If not, try to extract the first occurrence of a valid answer
-        for answer in valid_answers:
-            if answer in clean_response:
-                return answer
-
-        # If no valid answer found, return "INVALID"
+        match = re.search(r'\b([ABCD]|NO)\b', clean_response)
+        if match:
+            return match.group(1)
         return "INVALID"
 
     def _count_tokens(self, prompt: str, response: str, model: str) -> int:
         """Estimate token count for the request and response."""
-        # This is a simple approximation; for production, use model-specific tokenizers
         words = len(prompt.split()) + len(response.split())
-        return int(words * 1.3)  # Rough approximation
+        return int(words * 1.3)
 
     def calculate_score(self, model_answer: str, correct_answer: str) -> int:
         """Calculate score based on model's answer and correct answer."""
         if model_answer in ["INVALID", "ERROR"]:
-            return 0  # No score for invalid responses
-
+            return 0
         if model_answer == "NO":
-            return 0  # No score for skipped questions
-
+            return 0
         if model_answer == correct_answer:
-            return 3  # Correct answer
+            return 3
         else:
-            return -1  # Incorrect answer
+            return -1
 
     def run_evaluation(self,
                        questions_file: str,
@@ -206,54 +179,26 @@ class ModelEvaluator:
                        sample_size: Optional[int] = None) -> str:
         """
         Run evaluation on a set of questions using specified prompt strategy and model.
-
-        Args:
-            questions_file: Path to the questions file
-            answer_key_file: Path to the answer key file
-            prompt_strategy: Name of the prompt strategy to use
-            model: Name of the model to use
-            output_dir: Directory to save results
-            sample_size: Optional number of questions to evaluate (for testing)
-
-        Returns:
-            Path to the results file
         """
         questions = self.load_questions(questions_file)
         answer_key = self.load_answer_key(answer_key_file)
-
-        # Use a sample of questions if specified
         if sample_size and sample_size < len(questions):
             questions = questions[:sample_size]
-
         results = []
         total_score = 0
         correct_count = 0
         incorrect_count = 0
         skipped_count = 0
         invalid_count = 0
-
-        # Extract test ID from questions file name
         test_id = Path(questions_file).stem
-
         logger.info(f"Starting evaluation with {len(questions)} questions using {prompt_strategy} on {model}")
-
-        # Process each question
         for question in tqdm(questions, desc="Evaluating questions"):
-            # Evaluate the question
             result = self.evaluate_question(question, prompt_strategy, model)
-
-            # Get correct answer from answer key
             correct_answer = answer_key.get(question['id'], "UNKNOWN")
-
-            # Calculate and add score
             score = self.calculate_score(result['model_answer'], correct_answer)
             result['correct_answer'] = correct_answer
             result['score'] = score
-
-            # Generate detailed result ID
             result['result_id'] = f"{question['id']}-Resp{result['model_answer']}-Correct{correct_answer}-Score{score:+d}"
-
-            # Update statistics
             total_score += score
             if score == 3:
                 correct_count += 1
@@ -263,14 +208,8 @@ class ModelEvaluator:
                 skipped_count += 1
             else:
                 invalid_count += 1
-
-            # Add to results list
             results.append(result)
-
-            # Add a small delay to avoid API rate limits
             time.sleep(0.5)
-
-        # Create summary statistics
         summary = {
             'test_id': test_id,
             'prompt_strategy': prompt_strategy,
@@ -284,37 +223,24 @@ class ModelEvaluator:
             'accuracy': correct_count / len(questions) if len(questions) > 0 else 0,
             'timestamp': datetime.datetime.now().isoformat()
         }
-
-        # Prepare the full results object
         evaluation_results = {
             'summary': summary,
             'results': results
         }
-
-        # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-
-        # Generate output filename
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         output_filename = f"EVAL-{test_id}-{prompt_strategy}-{model.replace('/', '-')}-{timestamp}.json"
         output_path = os.path.join(output_dir, output_filename)
-
-        # Save results to file
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(evaluation_results, f, indent=2, ensure_ascii=False)
-
         logger.info(f"Evaluation completed. Results saved to {output_path}")
         logger.info(f"Summary: Score={total_score}, Correct={correct_count}, Incorrect={incorrect_count}, Skipped={skipped_count}")
-
-        # Also save a CSV version for easy import into Tableau
         results_df = pd.DataFrame(results)
         csv_path = output_path.replace('.json', '.csv')
         results_df.to_csv(csv_path, index=False)
-
         return output_path
 
 
 if __name__ == "__main__":
-    # This allows running basic tests directly
     evaluator = ModelEvaluator()
     print("Evaluator initialized successfully")
