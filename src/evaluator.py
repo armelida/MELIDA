@@ -147,9 +147,9 @@ class ModelEvaluator:
             return "ERROR"
 
     def _extract_answer(self, response: str) -> str:
-        """Extract the answer (A, B, C, D, or NO) from the model response using regex."""
+        """Extract the answer (A, B, C, D, or N) from the model response using regex."""
         clean_response = response.upper().strip()
-        match = re.search(r'\b([ABCD]|NO)\b', clean_response)
+        match = re.search(r'\b([ABCDN])\b', clean_response)
         if match:
             return match.group(1)
         return "INVALID"
@@ -163,7 +163,7 @@ class ModelEvaluator:
         """Calculate score based on model's answer and correct answer."""
         if model_answer in ["INVALID", "ERROR"]:
             return 0
-        if model_answer == "NO":
+        if model_answer == "N":
             return 0
         if model_answer == correct_answer:
             return 3
