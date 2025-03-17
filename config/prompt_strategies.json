@@ -1,42 +1,22 @@
 {
   "Prompt-001": {
+    "description": "Basic prompt for medical exam questions. The answer must be only one of A, B, C, or D.",
+    "template": "Answer the following question:\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (ONLY A, B, C, or D):"
+  }
+  "Prompt-002": {
     "description": "Spanish prompt for AI model taking standardized test",
     "template": "Estás tomando un examen estandarizado MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
   },
-  "Prompt-002": {
+  "Prompt-003": {
     "description": "English prompt, questions and options in Spanish",
     "template": "You are taking a standardized MIR medical exam. Correct answers are worth +3 points and incorrect answers are -1 point. You must respond only with the letter of the option you consider correct (A, B, C, D) or 'NO' if you prefer not to answer. Do not include any additional text in your response. Your goal is to maximize your score.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only A, B, C, D or NO):"
   },
-  "Prompt-003": {
+  "Prompt-004": {
     "description": "English prompt for doctor, questions and options in Spanish",
     "template": "You are a doctor taking the MIR standardized medical exam. Correct answers are worth +3 points and incorrect answers are -1 point. You must respond only with the letter of the option you consider correct (A, B, C, D) or 'NO' if you prefer not to answer. Do not include any additional text in your response. Your goal is to maximize your score.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only A, B, C, D or NO):"
   },
-  "Prompt-004": {
+  "Prompt-005": {
     "description": "Spanish prompt for doctor taking MIR exam",
     "template": "Eres un médico tomando el examen MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
-  },
-  "Prompt-005": {
-    "description": "Chain-of-thought with bullet points: detailed reasoning before final answer",
-    "template": "Estás respondiendo un examen MIR. Para cada pregunta, proporciona una lista de puntos que expliquen tu análisis paso a paso de cada opción. Al final, resume brevemente y da tu respuesta final, que debe ser solo una letra (A, B, C, D) o 'NO'.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nPuntos de análisis:\n- \n- \n- \n\nRespuesta final:"
-  },
-  "Prompt-006": {
-    "description": "Elimination strategy: identify clearly wrong options before guessing",
-    "template": "Analiza cuidadosamente la siguiente pregunta del examen MIR. Primero, elimina aquellas opciones que consideres claramente incorrectas. Luego, de las opciones restantes, elige la respuesta final. Si no puedes eliminar ninguna, responde 'NO' para evitar penalización.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nOpciones eliminadas (lista las letras eliminadas):\nRespuesta final (solo A, B, C, D o NO):"
-  },
-  "Prompt-007": {
-    "description": "Confidence weighted response: provide answer with confidence percentage",
-    "template": "Responde a la siguiente pregunta del examen MIR indicando primero tu nivel de confianza (en porcentaje) para cada opción, y luego elige la opción con mayor confianza. Si tu confianza es inferior al 50% en todas, responde 'NO'.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nConfianza:\nA: ____%\nB: ____%\nC: ____%\nD: ____%\n\nTu respuesta final (solo A, B, C, D o NO):"
-  },
-  "Prompt-008": {
-    "description": "Simulated peer discussion: debate pros and cons before answering",
-    "template": "Simula un breve diálogo entre tú y un colega sobre la siguiente pregunta del examen MIR. Debatan los méritos y desventajas de cada opción. Después del diálogo, da tu respuesta final, la cual debe ser solo una letra (A, B, C, D) o 'NO'.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nDiálogo simulado:\n- Tú: …\n- Compañero: …\n\nRespuesta final:"
-  },
-  "Prompt-009": {
-    "description": "Risk assessment: evaluate risk of penalty before answering",
-    "template": "Para la siguiente pregunta del examen MIR, evalúa el riesgo de obtener una penalización (−1) si respondes incorrectamente. Si el riesgo es alto (confianza baja), responde 'NO'. De lo contrario, selecciona la opción que consideres correcta (A, B, C, D). Explica brevemente tu evaluación de riesgo en una o dos frases.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nEvaluación del riesgo:\n\nRespuesta final (solo A, B, C, D o NO):"
-  },
-  "Prompt-010": {
-    "description": "Rapid decision: minimal reasoning for fast answer",
-    "template": "Debes responder rápidamente a la siguiente pregunta del examen MIR. En una o dos frases muy breves, justifica tu elección y proporciona la respuesta final, que debe ser solo una letra (A, B, C, D) o 'NO'.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nJustificación breve:\n\nRespuesta final:"
   }
 }
