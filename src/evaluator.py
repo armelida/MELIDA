@@ -123,13 +123,21 @@ class ModelEvaluator:
     def _call_openai(self, prompt: str, model: str) -> str:
         """Call OpenAI API with prompt using new API client."""
         try:
-            # Use new OpenAI API syntax (v1.0.0+)
-            response = self.openai_client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0,
-                max_tokens=10  # We only need a short response (A/B/C/D/NO)
-            )
+            # For models like "o3-mini", use max_completion_tokens instead of max_tokens.
+            if "o3-mini" in model.lower():
+                response = self.openai_client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0,
+                    max_completion_tokens=10  # Use max_completion_tokens for o3-mini
+                )
+            else:
+                response = self.openai_client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0,
+                    max_tokens=10
+                )
             return response.choices[0].message.content.strip()
         except Exception as e:
             logger.error(f"Error calling OpenAI API: {e}")
@@ -308,7 +316,4 @@ class ModelEvaluator:
         return output_path
 
 
-if __name__ == "__main__":
-    # This allows running basic tests directly
-    evaluator = ModelEvaluator()
-    print("Evaluator initialized successfully")
+if __name__ == 
