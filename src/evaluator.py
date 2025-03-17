@@ -94,8 +94,9 @@ class ModelEvaluator:
             option_d=question['options']['D']
         )
 
-        # Call the appropriate model API
-        if 'openai' in model.lower() or 'gpt' in model.lower():
+        # Call the appropriate model API.
+        # Now also support models that include "o3-mini" in their name.
+        if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
             response = self._call_anthropic(prompt, model)
