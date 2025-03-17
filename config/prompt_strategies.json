@@ -1,8 +1,8 @@
 {
   "Prompt-001": {
-    "description": "Basic prompt for medical exam questions. The answer must be only one of A, B, C, or D.",
-    "template": "Answer the following question:\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (ONLY A, B, C, or D):"
-  }
+    "description": "Basic prompt for medical exam questions. Answer with A, B, C, or D if you are confident, or answer NO if you do not know the answer.",
+    "template": "Answer the following question:\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (ONLY A, B, C, D, or NO if uncertain):"
+  },
   "Prompt-002": {
     "description": "Spanish prompt for AI model taking standardized test",
     "template": "Estás tomando un examen estandarizado MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
