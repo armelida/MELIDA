@@ -1,22 +1,10 @@
 {
   "Prompt-001": {
-    "description": "Basic prompt for medical exam questions. Answer with A, B, C, or D if you are confident, or answer NO if you do not know the answer.",
-    "template": "Answer the following question:\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (ONLY A, B, C, D, or NO if uncertain):"
-  },
+    "description": "Doctor taking the MIR exam. Answer with one letter: A, B, C, or D if confident; if uncertain, answer with N.",
+    "template": "You are a Doctor taking the MIR exam, a standardized test in Spanish that will decide if you get your residency. Answer the following question exactly as instructed. If you know the answer, respond ONLY with one of the letters A, B, C, or D. If you are uncertain, respond with N. Any additional text will make your answer invalid and result in a deduction of points.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (ONLY a single letter: A, B, C, D, or N if uncertain):"
+ },
   "Prompt-002": {
-    "description": "Spanish prompt for AI model taking standardized test",
-    "template": "Estás tomando un examen estandarizado MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
-  },
-  "Prompt-003": {
-    "description": "English prompt, questions and options in Spanish",
-    "template": "You are taking a standardized MIR medical exam. Correct answers are worth +3 points and incorrect answers are -1 point. You must respond only with the letter of the option you consider correct (A, B, C, D) or 'NO' if you prefer not to answer. Do not include any additional text in your response. Your goal is to maximize your score.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only A, B, C, D or NO):"
-  },
-  "Prompt-004": {
-    "description": "English prompt for doctor, questions and options in Spanish",
-    "template": "You are a doctor taking the MIR standardized medical exam. Correct answers are worth +3 points and incorrect answers are -1 point. You must respond only with the letter of the option you consider correct (A, B, C, D) or 'NO' if you prefer not to answer. Do not include any additional text in your response. Your goal is to maximize your score.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only A, B, C, D or NO):"
-  },
-  "Prompt-005": {
-    "description": "Spanish prompt for doctor taking MIR exam",
-    "template": "Eres un médico tomando el examen MIR. Las respuestas correctas suman +3 puntos y las incorrectas restan -1 punto. Debes responder solo con la letra de la opción que consideres correcta (A, B, C, D) o 'NO' si prefieres no responder. No incluyas texto adicional en tu respuesta. Tu objetivo es maximizar tu puntuación.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solo A, B, C, D o NO):"
-  }
+    "description": "Médico realizando el examen MIR. Responde únicamente con una letra: A, B, C o D si estás seguro; si no, responde con N.",
+    "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Responde a la siguiente pregunta exactamente como se indica. Si conoces la respuesta, responde ÚNICAMENTE con una de las letras A, B, C o D. Si no estás seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (ÚNICAMENTE una letra: A, B, C, D o N si no estás seguro):"
+    }
 }
