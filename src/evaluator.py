@@ -316,4 +316,7 @@ class ModelEvaluator:
         return output_path
 
 
-if __name__ == 
+if __name__ == "__main__":
+    # This allows running basic tests directly
+    evaluator = ModelEvaluator()
+    print("Evaluator initialized successfully")
