@@ -128,14 +128,12 @@ class ModelEvaluator:
                 response = self.openai_client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0,
                     max_completion_tokens=10  # Use max_completion_tokens for o3-mini
                 )
             else:
                 response = self.openai_client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0,
                     max_tokens=10
                 )
             return response.choices[0].message.content.strip()
