@@ -1,1 +1,82 @@
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSV Web Data Connector</title>
+    <!-- Load PapaParse to parse CSV files -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+    <!-- Load Tableau WDC JavaScript library -->
+    <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js"></script>
+    <script>
+      (function() {
+        var myConnector = tableau.makeConnector();
+
+        // Define the schema (we assume CSV has a header row).
+        // Here we create a generic schema by reading the CSV header during getData.
+        // For simplicity, we'll pass all rows as objects.
+        myConnector.getSchema = function(schemaCallback) {
+          // We use a dummy schema for now. It will be replaced once data is fetched.
+          var cols = [
+            { id: "data", dataType: tableau.dataTypeEnum.string }
+          ];
+          var tableSchema = {
+            id: "csvData",
+            alias: "CSV Data from a URL",
+            columns: cols
+          };
+          schemaCallback([tableSchema]);
+        };
+
+        // Fetch the CSV data and pass it to Tableau.
+        myConnector.getData = function(table, doneCallback) {
+          // Get the CSV URL input by the user.
+          var csvUrl = document.getElementById("csvUrl").value;
+          // Parse CSV from the URL using PapaParse.
+          Papa.parse(csvUrl, {
+            download: true,
+            header: true,
+            complete: function(results) {
+              // If there is a header, we can dynamically build the schema if needed.
+              // For this simple example, we'll convert each row object to a JSON string.
+              var data = results.data;
+              var tableData = [];
+              for (var i = 0; i < data.length; i++) {
+                // Convert the row object to a string.
+                tableData.push({ data: JSON.stringify(data[i]) });
+              }
+              table.appendRows(tableData);
+              doneCallback();
+            },
+            error: function(err) {
+              tableau.abortWithError("Error parsing CSV: " + err);
+            }
+          });
+        };
+
+        tableau.registerConnector(myConnector);
+
+        // Set up event listener for the submit button.
+        document.addEventListener("DOMContentLoaded", function() {
+          document.getElementById("submitButton").addEventListener("click", function() {
+            tableau.connectionName = "CSV Data from GitHub";
+            tableau.submit();
+          });
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <h1>CSV Web Data Connector</h1>
+    <p>
+      Enter the URL of a CSV file (e.g., from GitHub in its raw format):
+    </p>
+    <input
+      type="text"
+      id="csvUrl"
+      size="100"
+      placeholder="https://raw.githubusercontent.com/armelida/MELIDA/main/data/exports/yourfile.csv"
+    />
+    <button id="submitButton">Get Data</button>
+  </body>
+</html>
