@@ -233,10 +233,10 @@
     "id": "MIR-2024-v01-t01-Q049",
     "question_text": "Señale la actitud correcta ante un paciente en edad infantil que refiere antecedente de traumatismo facial no tratado hace 3 años y que presenta limitación progresiva de la apertura oral y desviación del mentón hacia un lado:",
     "options": {
-      "A": "Debe descartarse la existencia de una fractura antigua tipo Lefort-",
-      "B": NaN,
-      "C": "Debe realizarse un estudio mediante tomografía computarizada para descartar una displasia fibrosa.",
-      "D": "Debe descartarse el diagnóstico de osteocondroma del cóndilo mandibular."
+      "A": "Debe descartarse la existencia de una fractura antigua tipo Lefort-1.",
+      "B": "Debe realizarse un estudio mediante tomografía computarizada para descartar una displasia fibrosa.",
+      "C": "Debe descartarse el diagnóstico de osteocondroma del cóndilo mandibular.",
+      "D": "Debe descartarse el diagnóstico de anquilosis témporo-mandibular."
     }
   },
   {
