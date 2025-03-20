@@ -160,6 +160,16 @@
     }
   },
   {
+  "id": "MIR-2024-v01-t01-Q042",
+  "question_text": "En evaluación económica de intervenciones sanitarias, un estudio que compare los costes alternativos de dos intervenciones frente a sus resultados de salud expresados en años ajustados por calidad o años de vida ajustados por discapacidad se denomina:",
+  "options": {
+    "A": "Análisis coste-beneficio.",
+    "B": "Análisis coste-efectividad.",
+    "C": "Análisis coste-utilidad.",
+    "D": "Análisis de minimización de costes."
+  }
+},
+  {
     "id": "MIR-2024-v01-t01-Q043",
     "question_text": "Señala la opción INCORRECTA respecto a la enfermedad meningocócica:",
     "options": {
@@ -229,6 +239,16 @@
       "D": "Debe descartarse el diagnóstico de osteocondroma del cóndilo mandibular."
     }
   },
+  {
+  "id": "MIR-2024-v01-t01-Q050",
+  "question_text": "Respecto al colgajo DIEP (Deep inferior epigastric perforator), señale la respuesta INCORRECTA:",
+  "options": {
+    "A": "Se trata de un colgajo basado en vasos perforantes que puede ser usado como colgajo libre o como colgajo pediculado.",
+    "B": "Está irrigado por ramas de la arteria circunfleja femoral lateral.",
+    "C": "Puede utilizarse para reconstrucción mamaria.",
+    "D": "Los vasos perforantes musculocutáneos atraviesan el músculo recto del abdomen antes de irrigar la piel del colgajo"
+  }
+},
   {
     "id": "MIR-2024-v01-t01-Q051",
     "question_text": "¿Cuál de los siguientes escenarios podría suponer una contraindicación para el uso de un injerto de piel parcial como cobertura de un defecto cutáneo?:",
@@ -1718,6 +1738,16 @@
       "C": "Ciclosporina.",
       "D": "Biológico con mecanismo de acción antiInterleucina"
     }
+  },
+  {
+  "id": "MIR-2024-v01-t01-Q200",
+  "question_text": "Indique, de los siguientes, ¿cuál es un criterio de malignidad radiológica de los tumores óseos?",
+  "options": {
+    "A": "Esclerosis perilesional reactiva.",
+    "B": "Presencia de calcificaciones puntiformes en el interior de la estructura ósea.",
+    "C": "Rotura de la cortical ósea.",
+    "D": "Localización epifisaria del tumor por la posibilidad de afectación de la articulación."
+   }
   },
   {
     "id": "MIR-2024-v01-t01-Q201",
