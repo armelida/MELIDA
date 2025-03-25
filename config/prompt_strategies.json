@@ -8,8 +8,8 @@
     ]
   },
   "Prompt-002": {
-    "description": "M\u00e9dico realizando el examen MIR. Responde \u00fanicamente con una letra: A, B, C o D si est\u00e1s seguro; si no, responde con N.",
-    "template": "Eres un M\u00e9dico que est\u00e1 realizando el examen MIR, un test estandarizado en espa\u00f1ol que determinar\u00e1 si obtienes tu residencia. Responde a la siguiente pregunta exactamente como se indica. Si conoces la respuesta, responde \u00daNICAMENTE con una de las letras A, B, C o D. Si no est\u00e1s seguro, responde con N. Cualquier texto adicional invalidar\u00e1 tu respuesta y restar\u00e1 puntos.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (\u00daNICAMENTE una letra: A, B, C, D o N si no est\u00e1s seguro):",
+    "description": "Médico realizando el examen MIR. Responde únicamente con una letra: A, B, C o D si estás seguro; si no, responde con N.",
+    "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Responde a la siguiente pregunta exactamente como se indica. Si conoces la respuesta, responde ÚNICAMENTE con una de las letras A, B, C o D. Si no estáss seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (\u00daNICAMENTE una letra: A, B, C, D o N si no estás seguro):",
     "language": "Unknown",
     "tags": []
   }
