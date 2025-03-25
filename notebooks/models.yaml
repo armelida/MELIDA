@@ -7,4 +7,4 @@ models:
     model_id: "claude-3-7-sonnet-20250219"
   - name: "Together"
     provider: "Together"
-    model_id: "together-v1"
+    model_id: "deepseek-ai/DeepSeek-R1"
