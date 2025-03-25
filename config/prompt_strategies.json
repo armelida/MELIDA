@@ -9,7 +9,7 @@
   },
   "Prompt-002": {
     "description": "Médico realizando el examen MIR. Responde únicamente con una letra: A, B, C o D si estás seguro; si no, responde con N.",
-    "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Responde a la siguiente pregunta exactamente como se indica. Si conoces la respuesta, responde ÚNICAMENTE con una de las letras A, B, C o D. Si no estáss seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (\u00daNICAMENTE una letra: A, B, C, D o N si no estás seguro):",
+    "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Responde a la siguiente pregunta exactamente como se indica. Si conoces la respuesta, responde ÚNICAMENTE con una de las letras A, B, C o D. Si no estáss seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (ÚNICAMENTE una letra: A, B, C, D o N si no estás seguro):",
     "language": "Unknown",
     "tags": []
   }
