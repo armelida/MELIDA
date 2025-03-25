@@ -794,9 +794,9 @@
     "question_text": "Neonato de 10 días de vida que es traído por sus padres a los servicios de urgencias por presentar, desde hace 24 horas, rechazo de las tomas e hipotonía generalizada. Tras pruebas complementarias, se diagnostica de coartación de aorta preductal crítica. El paciente evoluciona en pocas horas hacia el shock cardiogénico. En este contexto, ¿cuál debe ser el primer tratamiento para mejorar la hemodinámica de este paciente?",
     "options": {
       "A": "Iniciar perfusión continua con prostaglandinas E",
-      "B": NaN,
-      "C": "Administrar tratamiento con ibuprofeno.",
-      "D": "Plantear cirugía de carácter emergente."
+      "B": "Administrar tratamiento con ibuprofeno.",
+      "C": "Plantear cirugía de carácter emergente.",
+      "D": "Realizar cateterismo y atrioseptostomía de Rashking urgente."
     }
   },
   {
