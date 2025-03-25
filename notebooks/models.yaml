@@ -1,0 +1,10 @@
+models:
+  - name: "o3-mini-2025-01-31"
+    provider: "OpenAI"
+    model_id: "o3-mini-2025-01-31"
+  - name: "Claude"
+    provider: "Anthropic"
+    model_id: "claude-3-7-sonnet-20250219"
+  - name: "Together"
+    provider: "Together"
+    model_id: "together-v1"
