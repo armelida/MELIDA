@@ -1,3 +1,0 @@
-question_id,prompt_strategy,model,model_answer,raw_response,response_time,tokens_used,timestamp,correct_answer,score,result_id
-MIR-2024-v01-t01-Q026,Prompt-001,gpt-4,B,B,1.0191776752471924,228,2025-03-10T18:44:45.112874,B,3,MIR-2024-v01-t01-Q026-RespB-CorrectB-Score+3
-MIR-2024-v01-t01-Q027,Prompt-001,gpt-4,C,C,0.7878317832946777,179,2025-03-10T18:44:46.402059,C,3,MIR-2024-v01-t01-Q027-RespC-CorrectC-Score+3
