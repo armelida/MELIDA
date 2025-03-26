@@ -52,7 +52,7 @@ class ModelEvaluator:
         if 'openai' in self.config:
             openai.api_key = self.config['openai']['api_key']
             # Create a client instance for the new OpenAI SDK
-            self.openai_client = openai.OpenAI(api_key=self.config['openai']['api_key'])
+            self.openai_client = openai
 
         if 'anthropic' in self.config:
             self.anthropic_client = anthropic.Anthropic(
