@@ -81,7 +81,6 @@ class ModelEvaluator:
         start_time = time.time()
         prompt_strategy_dict = self.prompt_strategies[prompt_strategy]
         prompt_template = prompt_strategy_dict["template"]
-        # Build the prompt using the template.
         prompt = prompt_template.format(
             question_text=question.get('question_text', "Not available"),
             option_a=question['options'].get('A', ""),
@@ -89,7 +88,6 @@ class ModelEvaluator:
             option_c=question['options'].get('C', ""),
             option_d=question['options'].get('D', "")
         )
-        # Call the appropriate API based on model.
         if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
@@ -104,50 +102,46 @@ class ModelEvaluator:
             'prompt_strategy': prompt_strategy,
             'model': model,
             'prompt': prompt,
-            'full_model_output': response,  # Store the complete output.
-            'model_answer': model_answer,   # Extracted answer letter.
-            'raw_response': response,       # Alias for the complete output.
+            'full_model_output': response,
+            'model_answer': model_answer,
+            'raw_response': response,
             'response_time': end_time - start_time,
             'tokens_used': self._count_tokens(prompt, response, model),
             'timestamp': datetime.datetime.now().isoformat()
         }
 
     def _call_openai(self, prompt: str, model: str) -> str:
-    """Call OpenAI API with prompt using the new API client."""
-    try:
-        if "o3-mini" in model.lower():
-            # Use max_completion_tokens for o3-mini models
-            response = self.openai_client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                max_completion_tokens=1024  # Increased token limit
-            )
-        else:
-            # Use max_tokens for other models
-            response = self.openai_client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=1024  # Increased token limit for full responses
-            )
-        # Return the complete output (do not strip to preserve any extra text)
-        return response.choices[0].message.content
-    except Exception as e:
-        logger.error(f"Error calling OpenAI API: {e}")
-        return "ERROR"
+        """Call OpenAI API with prompt using the new API client."""
+        try:
+            if "o3-mini" in model.lower():
+                response = self.openai_client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_completion_tokens=1024
+                )
+            else:
+                response = self.openai_client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1024
+                )
+            return response.choices[0].message.content
+        except Exception as e:
+            logger.error(f"Error calling OpenAI API: {e}")
+            return "ERROR"
 
     def _call_anthropic(self, prompt: str, model: str) -> str:
         """Call Anthropic API with prompt."""
         try:
             response = self.anthropic_client.messages.create(
                 model=model,
-                max_tokens=1024,  # Increased token limit for full responses
+                max_tokens=1024,
                 temperature=0,
                 system="You are taking a medical examination. Answer only with the letter of the correct option (A, B, C, D) or 'NO' if you prefer not to answer.",
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
             )
-            # Return the complete output.
             return response.content[0].text
         except Exception as e:
             logger.error(f"Error calling Anthropic API: {e}")
@@ -185,7 +179,7 @@ class ModelEvaluator:
                        output_dir: str = 'data/results',
                        sample_size: Optional[int] = None) -> str:
         """
-        Run evaluation on a set of questions using the specified prompt strategy and model.
+        Run evaluation on a set of questions using specified prompt strategy and model.
         """
         questions = self.load_questions(questions_file)
         answer_key = self.load_answer_key(answer_key_file)
