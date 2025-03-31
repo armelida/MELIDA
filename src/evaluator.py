@@ -51,7 +51,6 @@ class ModelEvaluator:
         """Set up API clients based on configuration."""
         if 'openai' in self.config:
             openai.api_key = self.config['openai']['api_key']
-            # Create a client instance for the new OpenAI SDK
             self.openai_client = openai
 
         if 'anthropic' in self.config:
@@ -82,13 +81,15 @@ class ModelEvaluator:
         start_time = time.time()
         prompt_strategy_dict = self.prompt_strategies[prompt_strategy]
         prompt_template = prompt_strategy_dict["template"]
+        # Build the prompt using the template.
         prompt = prompt_template.format(
-            question_text=question['question_text'],
-            option_a=question['options']['A'],
-            option_b=question['options']['B'],
-            option_c=question['options']['C'],
-            option_d=question['options']['D']
+            question_text=question.get('question_text', "Not available"),
+            option_a=question['options'].get('A', ""),
+            option_b=question['options'].get('B', ""),
+            option_c=question['options'].get('C', ""),
+            option_d=question['options'].get('D', "")
         )
+        # Call the appropriate API based on model.
         if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
@@ -99,32 +100,29 @@ class ModelEvaluator:
         model_answer = self._extract_answer(response)
         return {
             'question_id': question['id'],
+            'question_text': question.get('question_text', "Not available"),
             'prompt_strategy': prompt_strategy,
             'model': model,
-            'model_answer': model_answer,
-            'raw_response': response,
+            'prompt': prompt,
+            'full_model_output': response,  # Store the complete output.
+            'model_answer': model_answer,   # Extracted answer letter.
+            'raw_response': response,       # Alias for the complete output.
             'response_time': end_time - start_time,
             'tokens_used': self._count_tokens(prompt, response, model),
             'timestamp': datetime.datetime.now().isoformat()
         }
 
     def _call_openai(self, prompt: str, model: str) -> str:
-        """Call OpenAI API with prompt using new API client."""
+        """Call OpenAI API with prompt using the new API client."""
         try:
-            # For models like "o3-mini", remove the restrictive token limit by setting a high max_completion_tokens.
-            if "o3-mini" in model.lower():
-                response = self.openai_client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_completion_tokens=1024  # Increase token limit for complex reasoning
-                )
-            else:
-                response = self.openai_client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=10
-                )
-            return response.choices[0].message.content.strip()
+            # Increase token limit for full responses.
+            response = self.openai_client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1024  # Increased token limit
+            )
+            # Return full output (do not strip, so additional text is preserved).
+            return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Error calling OpenAI API: {e}")
             return "ERROR"
@@ -134,14 +132,15 @@ class ModelEvaluator:
         try:
             response = self.anthropic_client.messages.create(
                 model=model,
-                max_tokens=10,
+                max_tokens=1024,  # Increased token limit for full responses
                 temperature=0,
                 system="You are taking a medical examination. Answer only with the letter of the correct option (A, B, C, D) or 'NO' if you prefer not to answer.",
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
             )
-            return response.content[0].text.strip()
+            # Return the complete output.
+            return response.content[0].text
         except Exception as e:
             logger.error(f"Error calling Anthropic API: {e}")
             return "ERROR"
@@ -178,7 +177,7 @@ class ModelEvaluator:
                        output_dir: str = 'data/results',
                        sample_size: Optional[int] = None) -> str:
         """
-        Run evaluation on a set of questions using specified prompt strategy and model.
+        Run evaluation on a set of questions using the specified prompt strategy and model.
         """
         questions = self.load_questions(questions_file)
         answer_key = self.load_answer_key(answer_key_file)
