@@ -1,6 +1,0 @@
-question_id,prompt_strategy,model,model_answer,raw_response,response_time,tokens_used,timestamp,correct_answer,score,result_id
-MIR-2024-v01-t01-Q026,Prompt-001,claude-3-7-sonnet-20250219,B,B,1.2958927154541016,252,2025-03-17T22:42:54.038033,B,3,MIR-2024-v01-t01-Q026-RespB-CorrectB-Score+3
-MIR-2024-v01-t01-Q027,Prompt-001,claude-3-7-sonnet-20250219,C,C,1.3029003143310547,202,2025-03-17T22:42:55.841858,C,3,MIR-2024-v01-t01-Q027-RespC-CorrectC-Score+3
-MIR-2024-v01-t01-Q028,Prompt-001,claude-3-7-sonnet-20250219,A,A,1.255805253982544,200,2025-03-17T22:42:57.598627,A,3,MIR-2024-v01-t01-Q028-RespA-CorrectA-Score+3
-MIR-2024-v01-t01-Q029,Prompt-001,claude-3-7-sonnet-20250219,B,B,1.7980973720550537,206,2025-03-17T22:42:59.897673,B,3,MIR-2024-v01-t01-Q029-RespB-CorrectB-Score+3
-MIR-2024-v01-t01-Q030,Prompt-001,claude-3-7-sonnet-20250219,C,C,0.9726965427398682,218,2025-03-17T22:43:01.371462,C,3,MIR-2024-v01-t01-Q030-RespC-CorrectC-Score+3
