@@ -1,3 +1,4 @@
+# It doesn´t apply when running in Google Colab using Secrets
 {
     "openai": {
         "api_key": "YOUR_OPENAI_API_KEY_HERE"
