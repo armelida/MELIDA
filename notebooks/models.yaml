@@ -40,6 +40,12 @@ models:
     model_id: "Qwen/Qwen2-VL-72B-Instruct"
     max_tokens: 2000
     temperature: 0.0
+
+  - name: "grok-2-latest"
+    provider: "XAI"
+    model_id: "grok-2-latest"
+    max_tokens: 2000
+    temperature: 0.0
     
   - name: "gemini-1.5-pro-latest"
     provider: "google"  
