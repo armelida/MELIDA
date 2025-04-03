@@ -146,9 +146,7 @@ class ModelEvaluator:
                 max_tokens=1024,
                 temperature=0,
                 system="You are taking a medical examination. Answer only with the letter of the correct option (A, B, C, D) or 'NO' if you prefer not to answer.",
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
+                messages=[{"role": "user", "content": prompt}]
             )
             return response.content[0].text
         except Exception as e:
@@ -159,12 +157,10 @@ class ModelEvaluator:
         """Call the Together API with the given prompt using retry logic."""
         import requests
         from tenacity import retry, stop_after_attempt, wait_exponential
-        
         api_key = os.environ.get("TOGETHER_API_KEY") or self.config.get("together", {}).get("api_key")
         if not api_key:
             logger.error("Together API key not set in secrets or config.")
             return "ERROR"
-        
         endpoint = "https://api.together.xyz/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -189,13 +185,13 @@ class ModelEvaluator:
             "stop": ["<|eot_id|>", "<|eom_id|>"],
             "stream": False
         }
-        
+
         @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
         def make_request():
-            response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
-            response.raise_for_status()  # Will raise an HTTPError for 4xx/5xx responses
-            return response.json()
-        
+            resp = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+            resp.raise_for_status()
+            return resp.json()
+
         try:
             data = make_request()
             if "error" in data:
@@ -217,7 +213,10 @@ class ModelEvaluator:
             import google.generativeai as genai
             from tenacity import retry, stop_after_attempt, wait_exponential
 
-            # Configure the API key
+            # If the model string starts with "google-gemini-", strip that prefix.
+            if model.lower().startswith("google-gemini-"):
+                model = model[len("google-gemini-"):]
+
             genai.configure(api_key=api_key)
 
             @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
@@ -252,10 +251,6 @@ class ModelEvaluator:
                 logger.warning(f"Call to {model} blocked. Reason: {response.prompt_feedback.block_reason}")
             else:
                 output_text = "ERROR: No content generated (unknown reason)"
-            if hasattr(response, 'usage_metadata'):
-                tokens_used = response.usage_metadata.prompt_token_count + response.usage_metadata.candidates_token_count
-            else:
-                tokens_used = None
             return output_text
         except Exception as e:
             logger.error(f"ERROR calling Google model {model}: {e}")
@@ -263,12 +258,12 @@ class ModelEvaluator:
 
     def _call_xai(self, prompt: str, model: str) -> str:
         """Call the Grok (XAI) API for models like grok-2-latest."""
-        import requests  # Ensure requests is imported
+        import requests
         api_key = os.environ.get("GROK_API_KEY")
         if not api_key:
             logger.error("Grok API key not set in environment.")
             return "ERROR: Grok API key not set."
-        endpoint = "https://api.x.ai/v1/chat/completions"  # Grok API endpoint
+        endpoint = "https://api.x.ai/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
@@ -280,7 +275,7 @@ class ModelEvaluator:
         ]
         payload = {
             "messages": messages,
-            "model": model,  # For example, "grok-2-latest"
+            "model": model,
             "max_tokens": 1024,
             "temperature": 0
         }
