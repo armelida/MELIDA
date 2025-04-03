@@ -2,7 +2,7 @@
   
   "Prompt-001": {
   "description": "Médico realizando el examen MIR. Responde únicamente con una letra: A, B, C o D si estás seguro; si no, responde con N.",
-  "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Analiza cuidadosamente la siguiente pregunta y determina la respuesta correcta. Puedes razonar internamente, pero NO debes incluir tu razonamiento en la respuesta final. Responde ÚNICAMENTE con una letra: A, B, C o D. Si no estás seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solamente una letra):"
+  "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Analiza cuidadosamente la siguiente pregunta y determina la respuesta correcta. Puedes razonar internamente, pero NO incluyas ningún razonamiento, ni marcas como <think> o </think>, en la respuesta final. Responde ÚNICAMENTE con una letra: A, B, C o D. Si no estás seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solamente una letra):"
 },
   "Prompt-002": {
   "description": "Doctor taking the MIR exam. Answer with one letter: A, B, C, or D if confident; if uncertain, answer with N.",
