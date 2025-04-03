@@ -156,46 +156,54 @@ class ModelEvaluator:
             return "ERROR"
 
     def _call_together(self, prompt: str, model: str) -> str:
-        """Call the Together API with the given prompt."""
-        import requests  # Ensure requests is imported
+        """Call the Together API with the given prompt using retry logic."""
+        import requests
+        from tenacity import retry, stop_after_attempt, wait_exponential
+        
         api_key = os.environ.get("TOGETHER_API_KEY") or self.config.get("together", {}).get("api_key")
         if not api_key:
             logger.error("Together API key not set in secrets or config.")
             return "ERROR"
-        try:
-            endpoint = "https://api.together.xyz/v1/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            messages = [
-                {
-                    "role": "system",
-                    "content": ("You are a precise question-answering system. "
-                                "Respond with only one letter: A, B, C, or D. No extra text is allowed.")
-                },
-                {"role": "user", "content": prompt}
-            ]
-            payload = {
-                "model": model,
-                "messages": messages,
-                "max_tokens": 1024,
-                "temperature": 0.0,
-                "top_p": 0.7,
-                "top_k": 50,
-                "repetition_penalty": 1,
-                "stop": ["<|eot_id|>", "<|eom_id|>"],
-                "stream": False
-            }
+        
+        endpoint = "https://api.together.xyz/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        messages = [
+            {
+                "role": "system",
+                "content": ("You are a precise question-answering system. "
+                            "Respond with only one letter: A, B, C, or D. No extra text is allowed.")
+            },
+            {"role": "user", "content": prompt}
+        ]
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_tokens": 1024,
+            "temperature": 0.0,
+            "top_p": 0.7,
+            "top_k": 50,
+            "repetition_penalty": 1,
+            "stop": ["<|eot_id|>", "<|eom_id|>"],
+            "stream": False
+        }
+        
+        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+        def make_request():
             response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
-            response.raise_for_status()
-            data = response.json()
+            response.raise_for_status()  # Will raise an HTTPError for 4xx/5xx responses
+            return response.json()
+        
+        try:
+            data = make_request()
             if "error" in data:
                 raise ValueError(f"API Error: {data['error']}")
             if "choices" in data and len(data["choices"]) > 0:
                 return data["choices"][0]["message"]["content"]
             else:
-                return "ERROR"
+                return "ERROR: Unexpected response structure from Together API"
         except Exception as e:
             logger.error(f"Error calling Together API for model {model}: {e}")
             return "ERROR"
