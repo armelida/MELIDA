@@ -119,142 +119,149 @@ class ModelEvaluator:
         }
 
     def _call_openai(self, prompt: str, model: str) -> str:
-        """Call OpenAI API with prompt using the new API client."""
-        try:
-            if "o3-mini" in model.lower():
-                response = self.openai_client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_completion_tokens=1024
-                )
-            else:
-                response = self.openai_client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=1024
-                )
-            return response.choices[0].message.content
-        except Exception as e:
-            logger.error(f"Error calling OpenAI API: {e}")
-            return "ERROR"
+    try:
+        params = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 1024
+        }
+        # Only add temperature if it's set in the configuration
+        if "temperature" in self.config.get("openai", {}):
+            params["temperature"] = self.config["openai"]["temperature"]
+        
+        if "o3-mini" in model.lower():
+            params["max_completion_tokens"] = 2000  # Use the appropriate key for that model if needed
+            response = self.openai_client.chat.completions.create(**params)
+        else:
+            response = self.openai_client.chat.completions.create(**params)
+        return response.choices[0].message.content
+    except Exception as e:
+        logger.error(f"Error calling OpenAI API: {e}")
+        return "ERROR"
 
     def _call_anthropic(self, prompt: str, model: str) -> str:
-        """Call Anthropic API with prompt."""
-        try:
-            response = self.anthropic_client.messages.create(
-                model=model,
-                max_tokens=1024,
-                temperature=0,
-                system="You are taking a medical examination. Answer only with the letter of the correct option (A, B, C, D) or 'NO' if you prefer not to answer.",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return response.content[0].text
-        except Exception as e:
-            logger.error(f"Error calling Anthropic API: {e}")
-            return "ERROR"
+    """Call Anthropic API with prompt."""
+    try:
+        params = {
+            "model": model,
+            "max_tokens": 1024,
+            "system": "You are taking a medical examination. Answer only with the letter of the correct option (A, B, C, D) or 'NO' if you prefer not to answer.",
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        # Only add temperature if it's defined in the config for anthropic
+        if "temperature" in self.config.get("anthropic", {}):
+            params["temperature"] = self.config["anthropic"]["temperature"]
+        response = self.anthropic_client.messages.create(**params)
+        return response.content[0].text
+    except Exception as e:
+        logger.error(f"Error calling Anthropic API: {e}")
+        return "ERROR"
+
 
     def _call_together(self, prompt: str, model: str) -> str:
-        """Call the Together API with the given prompt using retry logic."""
-        import requests
-        from tenacity import retry, stop_after_attempt, wait_exponential
-        api_key = os.environ.get("TOGETHER_API_KEY") or self.config.get("together", {}).get("api_key")
-        if not api_key:
-            logger.error("Together API key not set in secrets or config.")
-            return "ERROR"
-        endpoint = "https://api.together.xyz/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-        messages = [
-            {
-                "role": "system",
-                "content": ("You are a precise question-answering system. "
-                            "Respond with only one letter: A, B, C, or D. No extra text is allowed.")
-            },
-            {"role": "user", "content": prompt}
-        ]
-        payload = {
-            "model": model,
-            "messages": messages,
-            "max_tokens": 1024,
-            "temperature": 0.0,
-            "top_p": 0.7,
-            "top_k": 50,
-            "repetition_penalty": 1,
-            "stop": ["<|eot_id|>", "<|eom_id|>"],
-            "stream": False
-        }
+    import requests
+    from tenacity import retry, stop_after_attempt, wait_exponential
+    api_key = os.environ.get("TOGETHER_API_KEY") or self.config.get("together", {}).get("api_key")
+    if not api_key:
+        logger.error("Together API key not set in secrets or config.")
+        return "ERROR"
+    endpoint = "https://api.together.xyz/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    messages = [
+        {"role": "system", "content": ("You are a precise question-answering system. Respond with only one letter: A, B, C, or D. No extra text is allowed.")},
+        {"role": "user", "content": prompt}
+    ]
+    payload = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": 1024,
+        "top_p": 0.7,
+        "top_k": 50,
+        "repetition_penalty": 1,
+        "stop": ["<|eot_id|>", "<|eom_id|>"],
+        "stream": False
+    }
+    # Only add temperature if it's provided in the config
+    if "temperature" in self.config.get("together", {}):
+        payload["temperature"] = self.config["together"]["temperature"]
 
-        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-        def make_request():
-            resp = requests.post(endpoint, headers=headers, json=payload, timeout=30)
-            resp.raise_for_status()
-            return resp.json()
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def make_request():
+        resp = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+        resp.raise_for_status()
+        return resp.json()
 
-        try:
-            data = make_request()
-            if "error" in data:
-                raise ValueError(f"API Error: {data['error']}")
-            if "choices" in data and len(data["choices"]) > 0:
-                return data["choices"][0]["message"]["content"]
-            else:
-                return "ERROR: Unexpected response structure from Together API"
-        except Exception as e:
-            logger.error(f"Error calling Together API for model {model}: {e}")
-            return "ERROR"
+    try:
+        data = make_request()
+        if "error" in data:
+            raise ValueError(f"API Error: {data['error']}")
+        if "choices" in data and len(data["choices"]) > 0:
+            return data["choices"][0]["message"]["content"]
+        else:
+            return "ERROR: Unexpected response structure from Together API"
+    except Exception as e:
+        logger.error(f"Error calling Together API for model {model}: {e}")
+        return "ERROR"
+        
 
     def _call_google(self, prompt: str, model: str) -> str:
-        """Call the Google Generative AI API (Gemini) with prompt."""
-        api_key = os.getenv("GOOGLE_API_KEY") or self.config.get("google", {}).get("api_key")
-        if not api_key:
-            return "ERROR: Google API key not set."
-        try:
-            import google.generativeai as genai
-            from tenacity import retry, stop_after_attempt, wait_exponential
+    api_key = os.environ.get("GOOGLE_API_KEY") or self.config.get("google", {}).get("api_key")
+    if not api_key:
+        return "ERROR: Google API key not set."
+    try:
+        import google.generativeai as genai
+        from tenacity import retry, stop_after_attempt, wait_exponential
 
-            # If the model string starts with "google-gemini-", strip that prefix.
-            if model.lower().startswith("google-gemini-"):
-                model = model[len("google-gemini-"):]
+        # Remove any prefix if necessary:
+        if model.lower().startswith("google-gemini-"):
+            model = model[len("google-gemini-"):]
+        
+        genai.configure(api_key=api_key)
 
-            genai.configure(api_key=api_key)
+        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+        def get_google_response(model_id, prompt, max_tokens, temperature):
+            generation_config = genai.types.GenerationConfig(
+                top_p=0.95,
+                top_k=40,
+                max_output_tokens=max_tokens,
+                candidate_count=1,
+                stop_sequences=["\n", ".", ",", " "],
+            )
+            # Only set temperature if provided
+            if temperature is not None:
+                generation_config.temperature = temperature
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+            model_obj = genai.GenerativeModel(
+                model_name=model_id,
+                generation_config=generation_config,
+                safety_settings=safety_settings
+            )
+            response = model_obj.generate_content(prompt)
+            return response
 
-            @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-            def get_google_response(model_id, prompt, max_tokens, temperature):
-                generation_config = genai.types.GenerationConfig(
-                    temperature=temperature,
-                    top_p=0.95,
-                    top_k=40,
-                    max_output_tokens=max_tokens,
-                    candidate_count=1,
-                    stop_sequences=["\n", ".", ",", " "],
-                )
-                safety_settings = [
-                    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-                    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-                    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-                    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-                ]
-                model_obj = genai.GenerativeModel(
-                    model_name=model_id,
-                    generation_config=generation_config,
-                    safety_settings=safety_settings
-                )
-                response = model_obj.generate_content(prompt)
-                return response
+        # Retrieve temperature from the config if it exists; otherwise, set to None
+        temperature = self.config.get("google", {}).get("temperature", None)
+        response = get_google_response(model, prompt, 2000, temperature)
+        if response.parts:
+            output_text = response.text
+        elif hasattr(response, 'prompt_feedback') and response.prompt_feedback.block_reason:
+            output_text = f"ERROR: Blocked by safety filter - Reason: {response.prompt_feedback.block_reason}"
+            logger.warning(f"Call to {model} blocked. Reason: {response.prompt_feedback.block_reason}")
+        else:
+            output_text = "ERROR: No content generated (unknown reason)"
+        return output_text
+    except Exception as e:
+        logger.error(f"ERROR calling Google model {model}: {e}")
+        return f"ERROR: {e}"
 
-            response = get_google_response(model, prompt, 1024, 0.7)
-            if response.parts:
-                output_text = response.text
-            elif hasattr(response, 'prompt_feedback') and response.prompt_feedback.block_reason:
-                output_text = f"ERROR: Blocked by safety filter - Reason: {response.prompt_feedback.block_reason}"
-                logger.warning(f"Call to {model} blocked. Reason: {response.prompt_feedback.block_reason}")
-            else:
-                output_text = "ERROR: No content generated (unknown reason)"
-            return output_text
-        except Exception as e:
-            logger.error(f"ERROR calling Google model {model}: {e}")
-            return f"ERROR: {e}"
 
     def _call_xai(self, prompt: str, model: str) -> str:
         """Call the Grok (XAI) API for models like grok-2-latest."""
