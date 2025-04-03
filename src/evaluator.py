@@ -52,7 +52,6 @@ class ModelEvaluator:
         if 'openai' in self.config:
             openai.api_key = self.config['openai']['api_key']
             self.openai_client = openai
-
         if 'anthropic' in self.config:
             self.anthropic_client = anthropic.Anthropic(
                 api_key=self.config['anthropic']['api_key']
@@ -88,14 +87,14 @@ class ModelEvaluator:
             option_c=question['options'].get('C', ""),
             option_d=question['options'].get('D', "")
         )
-        # Updated conditional to support Together-based models
+        # Routing based on model provider/name
         if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
             response = self._call_anthropic(prompt, model)
         elif ('together' in model.lower() or 'deepseek' in model.lower() or
-          'meta-llama' in model.lower() or 'qwen' in model.lower() or
-          'mistralai' in model.lower()):
+              'meta-llama' in model.lower() or 'qwen' in model.lower() or
+              'mistralai' in model.lower()):
             response = self._call_together(prompt, model)
         elif 'google' in model.lower():
             response = self._call_google(prompt, model)
@@ -159,7 +158,6 @@ class ModelEvaluator:
     def _call_together(self, prompt: str, model: str) -> str:
         """Call the Together API with the given prompt."""
         import requests  # Ensure requests is imported
-        # Retrieve Together API key from environment (secrets) or config
         api_key = os.environ.get("TOGETHER_API_KEY") or self.config.get("together", {}).get("api_key")
         if not api_key:
             logger.error("Together API key not set in secrets or config.")
@@ -203,98 +201,93 @@ class ModelEvaluator:
             return "ERROR"
 
     def _call_google(self, prompt: str, model: str) -> str:
-        """Placeholder for Google API call (not implemented)."""
-        return "ERROR"
+        """Call the Google Generative AI API (Gemini) with prompt."""
+        api_key = os.getenv("GOOGLE_API_KEY") or self.config.get("google", {}).get("api_key")
+        if not api_key:
+            return "ERROR: Google API key not set."
+        try:
+            import google.generativeai as genai
+            from tenacity import retry, stop_after_attempt, wait_exponential
+
+            # Configure the API key
+            genai.configure(api_key=api_key)
+
+            @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+            def get_google_response(model_id, prompt, max_tokens, temperature):
+                generation_config = genai.types.GenerationConfig(
+                    temperature=temperature,
+                    top_p=0.95,
+                    top_k=40,
+                    max_output_tokens=max_tokens,
+                    candidate_count=1,
+                    stop_sequences=["\n", ".", ",", " "],
+                )
+                safety_settings = [
+                    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+                ]
+                model_obj = genai.GenerativeModel(
+                    model_name=model_id,
+                    generation_config=generation_config,
+                    safety_settings=safety_settings
+                )
+                response = model_obj.generate_content(prompt)
+                return response
+
+            response = get_google_response(model, prompt, 1024, 0.7)
+            if response.parts:
+                output_text = response.text
+            elif hasattr(response, 'prompt_feedback') and response.prompt_feedback.block_reason:
+                output_text = f"ERROR: Blocked by safety filter - Reason: {response.prompt_feedback.block_reason}"
+                logger.warning(f"Call to {model} blocked. Reason: {response.prompt_feedback.block_reason}")
+            else:
+                output_text = "ERROR: No content generated (unknown reason)"
+            if hasattr(response, 'usage_metadata'):
+                tokens_used = response.usage_metadata.prompt_token_count + response.usage_metadata.candidates_token_count
+            else:
+                tokens_used = None
+            return output_text
+        except Exception as e:
+            logger.error(f"ERROR calling Google model {model}: {e}")
+            return f"ERROR: {e}"
 
     def _call_xai(self, prompt: str, model: str) -> str:
+        """Call the Grok (XAI) API for models like grok-2-latest."""
         import requests  # Ensure requests is imported
-
-    # Retrieve the Grok API key from environment (e.g., set via Colab secrets)
         api_key = os.environ.get("GROK_API_KEY")
         if not api_key:
-        logger.error("Grok API key not set in environment.")
-        return "ERROR: Grok API key not set."
-
+            logger.error("Grok API key not set in environment.")
+            return "ERROR: Grok API key not set."
         endpoint = "https://api.x.ai/v1/chat/completions"  # Grok API endpoint
         headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
         }
-    
-    # Construct messages with a system prompt and the user prompt.
         messages = [
-        {"role": "system", 
-         "content": "You are an AI that ONLY responds with a single letter (A, B, C, or D). No other text is allowed."},
-        {"role": "user", "content": prompt}
+            {"role": "system",
+             "content": "You are an AI that ONLY responds with a single letter (A, B, C, or D). No other text is allowed."},
+            {"role": "user", "content": prompt}
         ]
-    
         payload = {
-        "messages": messages,
-        "model": model,  # For example, "grok-2-latest"
-        "max_tokens": 1024,
-        "temperature": 0
+            "messages": messages,
+            "model": model,  # For example, "grok-2-latest"
+            "max_tokens": 1024,
+            "temperature": 0
         }
-    
-    try:
-        response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        data = response.json()
-        if "choices" in data and len(data["choices"]) > 0:
-            output_text = data["choices"][0]["message"]["content"].strip()
-        else:
-            output_text = "ERROR: Unexpected response structure from Grok API"
-        return output_text
-    except Exception as e:
-        logger.error(f"Error calling Grok API for model {model}: {e}")
-        return f"ERROR: {e}"
-
-        
-
-    def evaluate_question(self, question: Dict, prompt_strategy: str, model: str) -> Dict:
-    start_time = time.time()
-    prompt_strategy_dict = self.prompt_strategies[prompt_strategy]
-    prompt_template = prompt_strategy_dict["template"]
-    prompt = prompt_template.format(
-        question_text=question.get('question_text', "Not available"),
-        option_a=question['options'].get('A', ""),
-        option_b=question['options'].get('B', ""),
-        option_c=question['options'].get('C', ""),
-        option_d=question['options'].get('D', "")
-    )
-    # Updated conditional to support Grok (XAI) models:
-    if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
-        response = self._call_openai(prompt, model)
-    elif 'claude' in model.lower():
-        response = self._call_anthropic(prompt, model)
-    elif ('together' in model.lower() or 'deepseek' in model.lower() or
-          'meta-llama' in model.lower() or 'qwen' in model.lower() or
-          'mistralai' in model.lower()):
-        response = self._call_together(prompt, model)
-    elif 'google' in model.lower():
-        response = self._call_google(prompt, model)
-    elif 'grok' in model.lower() or 'xai' in model.lower():
-        response = self._call_xai(prompt, model)
-    else:
-        raise ValueError(f"Unsupported model: {model}")
-    end_time = time.time()
-    model_answer = self._extract_answer(response)
-    return {
-        'question_id': question['id'],
-        'question_text': question.get('question_text', "Not available"),
-        'prompt_strategy': prompt_strategy,
-        'model': model,
-        'prompt': prompt,
-        'full_model_output': response,
-        'model_answer': model_answer,
-        'raw_response': response,
-        'response_time': end_time - start_time,
-        'tokens_used': self._count_tokens(prompt, response, model),
-        'timestamp': datetime.datetime.now().isoformat()
-    }
-
-
-    
-
+        try:
+            response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            data = response.json()
+            if "choices" in data and len(data["choices"]) > 0:
+                output_text = data["choices"][0]["message"]["content"].strip()
+            else:
+                output_text = "ERROR: Unexpected response structure from Grok API"
+            return output_text
+        except Exception as e:
+            logger.error(f"Error calling Grok API for model {model}: {e}")
+            return f"ERROR: {e}"
 
     def _extract_answer(self, response: str) -> str:
         """Extract the answer (A, B, C, D, or N) from the model response using regex."""
