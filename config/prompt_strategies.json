@@ -1,16 +1,11 @@
 {
+  
   "Prompt-001": {
-    "description": "Médico realizando el examen MIR. Responde únicamente con una letra: A, B, C o D si estás seguro; si no, responde con N.",
-    "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Responde a la siguiente pregunta exactamente como se indica. Si conoces la respuesta, responde ÚNICAMENTE con una de las letras A, B, C o D. Si no estáss seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (ÚNICAMENTE una letra: A, B, C, D o N si no estás seguro):",
-    "language": "Unknown",
-    "tags": [
-      "doctor_role"
-    ]
-  },
+  "description": "Médico realizando el examen MIR. Responde únicamente con una letra: A, B, C o D si estás seguro; si no, responde con N.",
+  "template": "Eres un Médico que está realizando el examen MIR, un test estandarizado en español que determinará si obtienes tu residencia. Analiza cuidadosamente la siguiente pregunta y determina la respuesta correcta. Puedes razonar internamente, pero NO debes incluir tu razonamiento en la respuesta final. Responde ÚNICAMENTE con una letra: A, B, C o D. Si no estás seguro, responde con N. Cualquier texto adicional invalidará tu respuesta y restará puntos.\n\nPregunta: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nTu respuesta (solamente una letra):"
+},
   "Prompt-002": {
-    "description": "Doctor taking the MIR exam. Answer with one letter: A, B, C, or D if confident; if uncertain, answer with N.",
-    "template": "You are a Doctor taking the MIR exam, a standardized test in Spanish that will decide if you get your residency. Answer the following question exactly as instructed. If you know the answer, respond ONLY with one of the letters A, B, C, or D. If you are uncertain, respond with N. Any additional text will make your answer invalid and result in a deduction of points.\n\n{question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (ONLY a single letter: A, B, C, D, or N if uncertain):",
-    "language": "Unknown",
-    "tags": []
-  }
+  "description": "Doctor taking the MIR exam. Answer with one letter: A, B, C, or D if confident; if uncertain, answer with N.",
+  "template": "You are a Doctor taking the MIR exam, a standardized test in Spanish that will decide if you get your residency. Carefully analyze the following question and determine the correct answer. You may think internally, but DO NOT include your reasoning in the final answer. Answer ONLY with one letter: A, B, C, or D. If you are uncertain, answer with N. Any additional text will invalidate your answer and result in a deduction of points.\n\nQuestion: {question_text}\n\nA) {option_a}\nB) {option_b}\nC) {option_c}\nD) {option_d}\n\nYour answer (only a single letter):"
+}
 }
