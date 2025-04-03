@@ -2,37 +2,37 @@ models:
   - name: "o3-mini-2025-01-31"
     provider: "OpenAI"
     model_id: "o3-mini-2025-01-31"
-    max_tokens: 6000
+    max_tokens: 1024
 
   - name: "Claude"
     provider: "Anthropic"
     model_id: "claude-3-7-sonnet-20250219"
-    max_tokens: 6000
+    max_tokens: 1024
 
   - name: "deepseek-ai/DeepSeek-V3"
     provider: "Together"
     model_id: "deepseek-ai/DeepSeek-V3"
-    max_tokens: 6000
+    max_tokens: 1024
   
   - name: "deepseek-ai/DeepSeek-R1"
     provider: "Together"
     model_id: "deepseek-ai/DeepSeek-R1"
-    max_tokens: 6000
+    max_tokens: 1024
 
   - name: "meta-llama/Llama-3.3-70B-Instruct-Turbo"
     provider: "Together"
     model_id: "meta-llama/Llama-3.3-70B-Instruct-Turbo"
-    max_tokens: 6000
+    max_tokens: 1024
   
   - name: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
     provider: "Together"
     model_id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
-    max_tokens: 6000
+    max_tokens: 1024
 
   - name: "mistralai/Mistral-7B-Instruct-v0.2"
     provider: "Together"
     model_id: "mistralai/Mistral-7B-Instruct-v0.2"
-    max_tokens: 6000
+    max_tokens: 1024
 
   - name: "mistralai/Mixtral-8x22B-Instruct-v0.1"
     provider: "Together"
