@@ -99,6 +99,8 @@ class ModelEvaluator:
             response = self._call_together(prompt, model)
         elif 'google' in model.lower():
             response = self._call_google(prompt, model)
+        elif 'xai' in model.lower():
+            response = "ERROR: XAI provider not implemented"
         else:
             raise ValueError(f"Unsupported model: {model}")
         end_time = time.time()
