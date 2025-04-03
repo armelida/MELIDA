@@ -121,19 +121,23 @@ class ModelEvaluator:
     def _call_openai(self, prompt: str, model: str) -> str:
         """Call OpenAI API with prompt using the new API client."""
         try:
+            # Build base parameters
             params = {
                 "model": model,
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 1024
             }
-            # Only add temperature if it's set in the configuration
+            # Determine token limit key based on model type
+            if "o3-mini" in model.lower():
+                # For o3-mini, use max_completion_tokens and remove max_tokens
+                params["max_completion_tokens"] = 1024
+            else:
+                params["max_tokens"] = 1024
+
+            # Only add temperature if it's set in the configuration for OpenAI
             if "temperature" in self.config.get("openai", {}):
                 params["temperature"] = self.config["openai"]["temperature"]
-            if "o3-mini" in model.lower():
-                params["max_completion_tokens"] = 2000
-                response = self.openai_client.chat.completions.create(**params)
-            else:
-                response = self.openai_client.chat.completions.create(**params)
+
+            response = self.openai_client.chat.completions.create(**params)
             return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Error calling OpenAI API: {e}")
@@ -216,7 +220,7 @@ class ModelEvaluator:
             # Remove any prefix if necessary:
             if model.lower().startswith("google-gemini-"):
                 model = model[len("google-gemini-"):]
-            
+
             genai.configure(api_key=api_key)
 
             @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
