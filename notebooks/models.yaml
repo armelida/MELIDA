@@ -17,17 +17,11 @@ models:
     max_tokens: 2000
     temperature: 0.0
 
-  - name: Gemini 1.5 Pro Latest
-    provider: google  # Use 'google' as the provider key
-    model_id: gemini-1.5-pro-latest # The official model ID for the API
-    api_key_env: GOOGLE_API_KEY # Environment variable holding the key
-    max_tokens: 2000 # Or adjust as needed, Gemini often supports large contexts
-    temperature: 0.0 # Or adjust as needed
+  - name: Google Gemini
+    provider: google  
+    model_id: gemini-1.5-pro-latest 
+    api_key_env: GOOGLE_API_KEY 
+    max_tokens: 2000 
+    temperature: 0.0 
     
-  - name: Gemini 1.0 Pro
-    provider: google
-    model_id: gemini-1.0-pro
-    api_key_env: GOOGLE_API_KEY
-    max_tokens: 1000 # Example
-    temperature: 0.0
-
+ 
