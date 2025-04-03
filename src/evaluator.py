@@ -88,13 +88,15 @@ class ModelEvaluator:
             option_c=question['options'].get('C', ""),
             option_d=question['options'].get('D', "")
         )
+        # Updated conditional to support Together-based models
         if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
             response = self._call_anthropic(prompt, model)
-        elif ('together' in model.lower() or 'deepseek' in model.lower() or 'meta-llama' in model.lower() or 'qwen' in model.lower()):
+        elif ('together' in model.lower() or 'deepseek' in model.lower() or
+              'meta-llama' in model.lower() or 'qwen' in model.lower()):
             response = self._call_together(prompt, model)
-        elif 'google' in model.lower(): 
+        elif 'google' in model.lower():
             response = self._call_google(prompt, model)
         else:
             raise ValueError(f"Unsupported model: {model}")
@@ -150,6 +152,56 @@ class ModelEvaluator:
         except Exception as e:
             logger.error(f"Error calling Anthropic API: {e}")
             return "ERROR"
+
+    def _call_together(self, prompt: str, model: str) -> str:
+        """Call the Together API with the given prompt."""
+        import requests  # Ensure requests is imported
+        # Retrieve Together API key from environment (secrets) or config
+        api_key = os.environ.get("TOGETHER_API_KEY") or self.config.get("together", {}).get("api_key")
+        if not api_key:
+            logger.error("Together API key not set in secrets or config.")
+            return "ERROR"
+        try:
+            endpoint = "https://api.together.xyz/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            messages = [
+                {
+                    "role": "system",
+                    "content": ("You are a precise question-answering system. "
+                                "Respond with only one letter: A, B, C, or D. No extra text is allowed.")
+                },
+                {"role": "user", "content": prompt}
+            ]
+            payload = {
+                "model": model,
+                "messages": messages,
+                "max_tokens": 1024,
+                "temperature": 0.0,
+                "top_p": 0.7,
+                "top_k": 50,
+                "repetition_penalty": 1,
+                "stop": ["<|eot_id|>", "<|eom_id|>"],
+                "stream": False
+            }
+            response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            data = response.json()
+            if "error" in data:
+                raise ValueError(f"API Error: {data['error']}")
+            if "choices" in data and len(data["choices"]) > 0:
+                return data["choices"][0]["message"]["content"]
+            else:
+                return "ERROR"
+        except Exception as e:
+            logger.error(f"Error calling Together API for model {model}: {e}")
+            return "ERROR"
+
+    def _call_google(self, prompt: str, model: str) -> str:
+        """Placeholder for Google API call (not implemented)."""
+        return "ERROR"
 
     def _extract_answer(self, response: str) -> str:
         """Extract the answer (A, B, C, D, or N) from the model response using regex."""
