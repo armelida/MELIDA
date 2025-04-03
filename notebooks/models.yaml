@@ -23,5 +23,27 @@ models:
     api_key_env: GOOGLE_API_KEY 
     max_tokens: 2000 
     temperature: 0.0 
+
+  - name: Deepseek V3
+   provider: together
+   model_id: "deepseek-v3"         # Replace with the actual identifier if different
+   max_tokens: 2000
+   temperature: 0.0
+   api_key_env: TOGETHER_API_KEY
+ 
+- name: Deepseek R1
+   provider: together
+   model_id: "deepseek-r1"         # Replace with the actual identifier if different
+   max_tokens: 2000
+   temperature: 0.0
+   api_key_env: TOGETHER_API_KEY
+
+- name: Latest Llama Model
+   provider: together
+   model_id: "meta-llama/Llama-2-70b-chat-hf"  # Replace with the correct model id if needed
+   max_tokens: 2000
+   temperature: 0.0
+   api_key_env: TOGETHER_API_KEY
+
     
  
