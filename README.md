@@ -13,7 +13,7 @@ MELIDA (Model Evaluation for Life-sciences Intelligence and Decision Assistance)
 - Scoring system matching the actual MIR exam (+3 for correct answers, -1 for incorrect, 0 for skipped)
 - Detailed result tracking and analysis
 - Outputs in formats compatible with Tableau for visualization
-- [MIR Model Evaluator Dashboard](https://public.tableau.com/authoring/MELIDAMIREvaluator/Dashboard1#1)
+- [MIR Model Evaluator Dashboard](https://public.tableau.com/app/profile/alberto.m.lida/viz/MIRModelEvaluator/Dashboard1#1)
 - [Prompt Strategies Dashboard](https://public.tableau.com/views/MELIDA/Dashboard1?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
 ## Repository Structure
