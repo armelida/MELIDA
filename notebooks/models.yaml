@@ -19,7 +19,7 @@ models:
 
   - name: "Google-Gemini-gemini-1.5-pro"
     provider: google  
-    model_id: gemini-1.5-pro
+    model_id: gemini-1.5-pro-lates
     api_key_env: GOOGLE_API_KEY 
     max_tokens: 2000 
     temperature: 0.0 
