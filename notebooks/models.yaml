@@ -3,68 +3,57 @@ models:
     provider: "OpenAI"
     model_id: "o3-mini-2025-01-31"
     max_tokens: 2000
-    temperature: 0.0
 
   - name: "Claude"
     provider: "Anthropic"
     model_id: "claude-3-7-sonnet-20250219"
     max_tokens: 2000
-    temperature: 0.0
 
   - name: "deepseek-ai/DeepSeek-V3"
     provider: "Together"
     model_id: "deepseek-ai/DeepSeek-V3"
     max_tokens: 2000
-    temperature: 0.0
   
   - name: "deepseek-ai/DeepSeek-R1"
     provider: "Together"
     model_id: "deepseek-ai/DeepSeek-R1"
     max_tokens: 2000
-    temperature: 0.0
 
   - name: "meta-llama/Llama-3.3-70B-Instruct-Turbo"
     provider: "Together"
     model_id: "meta-llama/Llama-3.3-70B-Instruct-Turbo"
     max_tokens: 2000
-    temperature: 0.0
   
   - name: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
     provider: "Together"
     model_id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
     max_tokens: 2000
-    temperature: 0.0
 
   - name: "mistralai/Mistral-7B-Instruct-v0.2"
     provider: "Together"
     model_id: "mistralai/Mistral-7B-Instruct-v0.2"
     max_tokens: 2000
-    temperature: 0.0
 
   - name: "mistralai/Mixtral-8x22B-Instruct-v0.1"
     provider: "Together"
     model_id: "mistralai/Mixtral-8x22B-Instruct-v0.1"
     max_tokens: 2000
-    temperature: 0.0
     
   - name: "Qwen/Qwen2-VL-72B-Instruct"
     provider: "Together"
     model_id: "Qwen/Qwen2-VL-72B-Instruct"
     max_tokens: 2000
-    temperature: 0.0
 
   - name: "grok-2-latest"
     provider: "XAI"
     model_id: "grok-2-latest"
     max_tokens: 2000
-    temperature: 0.0
     
   - name: "gemini-1.5-pro-latest"
     provider: "google"  
     model_id: "gemini-1.5-pro-latest"
     api_key_env: GOOGLE_API_KEY 
     max_tokens: 2000 
-    temperature: 0.0 
 
     
  
