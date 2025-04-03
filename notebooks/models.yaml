@@ -17,7 +17,7 @@ models:
     max_tokens: 2000
     temperature: 0.0
 
-  - name: Google Gemini
+  - name: "Google-Gemini-gemini-1.5-pro-latest"
     provider: google  
     model_id: gemini-1.5-pro-latest 
     api_key_env: GOOGLE_API_KEY 
