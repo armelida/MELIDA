@@ -180,7 +180,7 @@ class ModelEvaluator:
         payload = {
             "model": model,
             "messages": messages,
-            "max_tokens": 4196,
+            "max_tokens": 1024,
             "top_p": 0.7,
             "top_k": 50,
             "repetition_penalty": 1,
@@ -190,7 +190,7 @@ class ModelEvaluator:
         if "temperature" in self.config.get("together", {}):
             payload["temperature"] = self.config["together"]["temperature"]
 
-        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=2, min=6, max=20))
+        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
         def make_request():
             resp = requests.post(endpoint, headers=headers, json=payload, timeout=30)
             resp.raise_for_status()
@@ -372,7 +372,7 @@ class ModelEvaluator:
             else:
                 invalid_count += 1
             results.append(result)
-            time.sleep(2)
+            time.sleep(0.5)
         summary = {
             'test_id': test_id,
             'prompt_strategy': prompt_strategy,
