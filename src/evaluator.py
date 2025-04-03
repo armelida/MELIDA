@@ -1,4 +1,4 @@
-import os
+giimport os
 import json
 import time
 import datetime
@@ -299,9 +299,20 @@ class ModelEvaluator:
             return f"ERROR: {e}"
 
     def _extract_answer(self, response: str) -> str:
-        """Extract the answer (A, B, C, D, or N) from the model response using regex."""
-        clean_response = response.upper().strip()
-        match = re.search(r'\b([ABCDN])\b', clean_response)
+        """
+        Extract the final answer letter from the model response.
+        If the response contains a <think>...</think> block, ignore that part and use what follows.
+        Otherwise, use the last non-empty line.
+        """
+        if "<think>" in response and "</think>" in response:
+            # Split on the closing tag and take the part after it.
+            response = response.split("</think>")[-1].strip()
+        else:
+            # Split into lines and take the last non-empty line.
+            lines = [line.strip() for line in response.strip().splitlines() if line.strip()]
+            if lines:
+                response = lines[-1]
+        match = re.search(r'\b([ABCDN])\b', response.upper())
         if match:
             return match.group(1)
         return "INVALID"
