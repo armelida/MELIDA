@@ -99,8 +99,8 @@ class ModelEvaluator:
             response = self._call_together(prompt, model)
         elif 'google' in model.lower():
             response = self._call_google(prompt, model)
-        elif 'xai' in model.lower():
-            response = "ERROR: XAI provider not implemented"
+        elif 'grok' in model.lower() or 'xai' in model.lower():
+            response = self._call_xai(prompt, model)
         else:
             raise ValueError(f"Unsupported model: {model}")
         end_time = time.time()
@@ -205,6 +205,96 @@ class ModelEvaluator:
     def _call_google(self, prompt: str, model: str) -> str:
         """Placeholder for Google API call (not implemented)."""
         return "ERROR"
+
+    def _call_xai(self, prompt: str, model: str) -> str:
+        import requests  # Ensure requests is imported
+
+    # Retrieve the Grok API key from environment (e.g., set via Colab secrets)
+        api_key = os.environ.get("GROK_API_KEY")
+        if not api_key:
+        logger.error("Grok API key not set in environment.")
+        return "ERROR: Grok API key not set."
+
+        endpoint = "https://api.x.ai/v1/chat/completions"  # Grok API endpoint
+        headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+        }
+    
+    # Construct messages with a system prompt and the user prompt.
+        messages = [
+        {"role": "system", 
+         "content": "You are an AI that ONLY responds with a single letter (A, B, C, or D). No other text is allowed."},
+        {"role": "user", "content": prompt}
+        ]
+    
+        payload = {
+        "messages": messages,
+        "model": model,  # For example, "grok-2-latest"
+        "max_tokens": 1024,
+        "temperature": 0
+        }
+    
+    try:
+        response = requests.post(endpoint, headers=headers, json=payload, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        if "choices" in data and len(data["choices"]) > 0:
+            output_text = data["choices"][0]["message"]["content"].strip()
+        else:
+            output_text = "ERROR: Unexpected response structure from Grok API"
+        return output_text
+    except Exception as e:
+        logger.error(f"Error calling Grok API for model {model}: {e}")
+        return f"ERROR: {e}"
+
+        
+
+    def evaluate_question(self, question: Dict, prompt_strategy: str, model: str) -> Dict:
+    start_time = time.time()
+    prompt_strategy_dict = self.prompt_strategies[prompt_strategy]
+    prompt_template = prompt_strategy_dict["template"]
+    prompt = prompt_template.format(
+        question_text=question.get('question_text', "Not available"),
+        option_a=question['options'].get('A', ""),
+        option_b=question['options'].get('B', ""),
+        option_c=question['options'].get('C', ""),
+        option_d=question['options'].get('D', "")
+    )
+    # Updated conditional to support Grok (XAI) models:
+    if 'openai' in model.lower() or 'gpt' in model.lower() or 'o3-mini' in model.lower():
+        response = self._call_openai(prompt, model)
+    elif 'claude' in model.lower():
+        response = self._call_anthropic(prompt, model)
+    elif ('together' in model.lower() or 'deepseek' in model.lower() or
+          'meta-llama' in model.lower() or 'qwen' in model.lower() or
+          'mistralai' in model.lower()):
+        response = self._call_together(prompt, model)
+    elif 'google' in model.lower():
+        response = self._call_google(prompt, model)
+    elif 'grok' in model.lower() or 'xai' in model.lower():
+        response = self._call_xai(prompt, model)
+    else:
+        raise ValueError(f"Unsupported model: {model}")
+    end_time = time.time()
+    model_answer = self._extract_answer(response)
+    return {
+        'question_id': question['id'],
+        'question_text': question.get('question_text', "Not available"),
+        'prompt_strategy': prompt_strategy,
+        'model': model,
+        'prompt': prompt,
+        'full_model_output': response,
+        'model_answer': model_answer,
+        'raw_response': response,
+        'response_time': end_time - start_time,
+        'tokens_used': self._count_tokens(prompt, response, model),
+        'timestamp': datetime.datetime.now().isoformat()
+    }
+
+
+    
+
 
     def _extract_answer(self, response: str) -> str:
         """Extract the answer (A, B, C, D, or N) from the model response using regex."""
