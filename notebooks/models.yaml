@@ -11,33 +11,26 @@ models:
     max_tokens: 2000
     temperature: 0.0
 
-  - name: "Together"
+  - name: "deepseek-ai/DeepSeek-R1"
     provider: "Together"
     model_id: "deepseek-ai/DeepSeek-R1"
     max_tokens: 2000
     temperature: 0.0
 
-  - name: "Google-Gemini-gemini-1.5-pro"
+  - name: "gemini-1.5-pro-latest"
     provider: "google"  
-    model_id: gemini-1.5-pro-latest
+    model_id: "gemini-1.5-pro-latest"
     api_key_env: GOOGLE_API_KEY 
     max_tokens: 2000 
     temperature: 0.0 
 
-  - name: "Deepseek-V3"
+  - name: "deepseek-v3"
     provider: "together"
     model_id: "deepseek-v3"         
     max_tokens: 2000
     temperature: 0.0
     api_key_env: TOGETHER_API_KEY
  
-  - name: "Deepseek-R1"
-    provider: "together"
-    model_id: "deepseek-r1"        
-    max_tokens: 2000
-    temperature: 0.0
-    api_key_env: TOGETHER_API_KEY
-
   - name: "meta-llama/Llama-2-70b"
     provider: "together"
     model_id: "meta-llama/Llama-2-70b-chat-hf" 
