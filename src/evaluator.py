@@ -92,6 +92,10 @@ class ModelEvaluator:
             response = self._call_openai(prompt, model)
         elif 'claude' in model.lower():
             response = self._call_anthropic(prompt, model)
+        elif ('together' in model.lower() or 'deepseek' in model.lower() or 'meta-llama' in model.lower() or 'qwen' in model.lower()):
+            response = self._call_together(prompt, model)
+        elif 'google' in model.lower(): 
+            response = self._call_google(prompt, model)
         else:
             raise ValueError(f"Unsupported model: {model}")
         end_time = time.time()
