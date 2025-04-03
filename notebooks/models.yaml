@@ -29,9 +29,9 @@ models:
     max_tokens: 2000
     temperature: 0.0
   
-  - name: "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+  - name: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
     provider: "Together"
-    model_id: "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+    model_id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
     max_tokens: 2000
     temperature: 0.0
     
